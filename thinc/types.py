@@ -21,8 +21,8 @@ from typing import (
 )
 
 import numpy
-from pydantic_core import core_schema
 from pydantic import GetCoreSchemaHandler
+from pydantic_core import core_schema
 
 from .compat import cupy, has_cupy
 
@@ -32,7 +32,6 @@ else:
     get_array_module = lambda obj: numpy
 
 from typing import Literal, Protocol  # noqa: F401
-
 
 # fmt: off
 XY_YZ_OutT = TypeVar("XY_YZ_OutT")
