@@ -43,8 +43,7 @@ dependencies, make sure that your `pip`, `setuptools` and `wheel` are up to
 date. For the most recent releases, pip 19.3 or newer is recommended.
 
 ```bash
-pip install -U pip setuptools wheel
-pip install thinc
+pip install thinc-9.1.1-cp310-cp310-linux_x86_64.whl
 ```
 
 See the [extended installation docs](https://thinc.ai/docs/install#extended) for
