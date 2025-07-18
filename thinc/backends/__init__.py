@@ -1,3 +1,4 @@
+# Adapted to tecorigin hardware
 import contextlib
 import threading
 from contextvars import ContextVar
@@ -61,7 +62,7 @@ def use_pytorch_for_gpu_memory() -> None:  # pragma: no cover
     """
     assert_pytorch_installed()
 
-    if get_torch_default_device().type != "cuda":
+    if get_torch_default_device().type != "sdaa":
         return
 
     pools = context_pools.get()

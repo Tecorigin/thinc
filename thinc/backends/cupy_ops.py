@@ -1,3 +1,4 @@
+# Adapted to tecorigin hardware
 import numpy
 
 from .. import registry
@@ -7,7 +8,7 @@ from ..util import (
     is_cupy_array,
     is_mxnet_gpu_array,
     is_tensorflow_gpu_array,
-    is_torch_cuda_array,
+    is_torch_sdaa_array,
     mxnet2xp,
     tensorflow2xp,
     torch2xp,
@@ -87,7 +88,7 @@ class CupyOps(Ops):
         # We'll try to perform a zero-copy conversion if possible.
         if is_cupy_array(data):
             array = self.xp.asarray(data, dtype=dtype)
-        elif is_torch_cuda_array(data):
+        elif is_torch_sdaa_array(data):
             array = torch2xp(data)
         elif is_tensorflow_gpu_array(data):
             array = tensorflow2xp(data)

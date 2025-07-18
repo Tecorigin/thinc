@@ -1,3 +1,4 @@
+# Adapted to tecorigin hardware
 from typing import Dict, Iterable, List, Union, cast
 
 from ..compat import has_torch_amp, torch
@@ -102,9 +103,9 @@ class PyTorchGradScaler:
                 "Gradient scaling is not supported, requires capable GPU and torch>=1.9.0"
             )
 
-        if not tensor.is_cuda:
+        if tensor.device.type != 'sdaa':
             msg = (
-                "Gradient scaling is only supported for CUDA tensors. "
+                "Gradient scaling is only supported for SDAA tensors. "
                 "If you are using PyTorch models, you can avoid this "
                 "error by disabling mixed-precision support."
             )

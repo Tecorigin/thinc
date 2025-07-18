@@ -1,20 +1,21 @@
+# Adapted to tecorigin hardware
 import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import lists, one_of, tuples
 
 from thinc.api import PyTorchGradScaler
-from thinc.compat import has_torch, has_torch_amp, has_torch_cuda_gpu, torch
+from thinc.compat import has_torch, has_torch_amp, has_torch_sdaa_gpu, torch
 from thinc.util import is_torch_array
 
 from ..strategies import ndarrays
 
 
 def tensors():
-    return ndarrays().map(lambda a: torch.tensor(a).cuda())
+    return ndarrays().map(lambda a: torch.tensor(a).sdaa())
 
 
 @pytest.mark.skipif(not has_torch, reason="needs PyTorch")
-@pytest.mark.skipif(not has_torch_cuda_gpu, reason="needs a GPU")
+@pytest.mark.skipif(not has_torch_sdaa_gpu, reason="needs a GPU")
 @pytest.mark.skipif(
     not has_torch_amp, reason="requires PyTorch with mixed-precision support"
 )
@@ -23,7 +24,7 @@ def tensors():
 def test_scale_random_inputs(X):
     import torch
 
-    device_id = torch.cuda.current_device()
+    device_id = torch.sdaa.current_device()
     scaler = PyTorchGradScaler(enabled=True)
     scaler.to_(device_id)
 
@@ -37,14 +38,14 @@ def test_scale_random_inputs(X):
 
 
 @pytest.mark.skipif(not has_torch, reason="needs PyTorch")
-@pytest.mark.skipif(not has_torch_cuda_gpu, reason="needs a GPU")
+@pytest.mark.skipif(not has_torch_sdaa_gpu, reason="needs a GPU")
 @pytest.mark.skipif(
     not has_torch_amp, reason="requires PyTorch with mixed-precision support"
 )
 def test_grad_scaler():
     import torch
 
-    device_id = torch.cuda.current_device()
+    device_id = torch.sdaa.current_device()
 
     scaler = PyTorchGradScaler(enabled=True)
     scaler.to_(device_id)
@@ -72,7 +73,7 @@ def test_grad_scaler():
     assert scaler.unscale(g)
 
     # Check whether unscale was successful.
-    assert g[0] == torch.tensor([1.0]).cuda()
+    assert g[0] == torch.tensor([1.0]).sdaa()
 
     scaler.update()
 
@@ -104,6 +105,6 @@ def test_raises_with_cpu_tensor():
 
     scaler = PyTorchGradScaler(enabled=True)
     with pytest.raises(
-        ValueError, match=r"Gradient scaling is only supported for CUDA tensors."
+        ValueError, match=r"Gradient scaling is only supported for SDAA tensors."
     ):
         scaler.scale([torch.tensor([1.0], device="cpu")])

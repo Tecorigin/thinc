@@ -1,3 +1,4 @@
+# Adapted to tecorigin hardware
 import numpy
 import pytest
 
@@ -9,7 +10,9 @@ from thinc.api import (
 from thinc.compat import has_torch, torch
 
 
+# sdaa不支持torchscript
 @pytest.mark.skipif(not has_torch, reason="needs PyTorch")
+@pytest.mark.skip
 @pytest.mark.parametrize("nN,nI,nO", [(2, 3, 4)])
 def test_pytorch_script(nN, nI, nO):
 
@@ -26,3 +29,6 @@ def test_pytorch_script(nN, nI, nO):
     script_model2.from_bytes(serialized)
 
     numpy.testing.assert_allclose(Y, script_model2.predict(X))
+
+if __name__ == "__main__":
+    test_pytorch_script(2, 3, 4)

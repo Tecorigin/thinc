@@ -1,3 +1,4 @@
+# Adapted to tecorigin hardware
 import contextlib
 import functools
 import inspect
@@ -44,7 +45,7 @@ from .compat import (
     has_mxnet,
     has_tensorflow,
     has_torch,
-    has_torch_cuda_gpu,
+    has_torch_sdaa_gpu,
     has_torch_mps,
 )
 from .compat import mxnet as mx
@@ -69,8 +70,8 @@ def get_torch_default_device() -> "torch.device":
 
     ops = get_current_ops()
     if isinstance(ops, CupyOps):
-        device_id = torch.cuda.current_device()
-        return torch.device(f"cuda:{device_id}")
+        device_id = torch.sdaa.current_device()
+        return torch.device(f"sdaa:{device_id}")
     elif isinstance(ops, MPSOps):
         return torch.device("mps")
 
@@ -103,8 +104,8 @@ def fix_random_seed(seed: int = 0) -> None:  # pragma: no cover
         torch.manual_seed(seed)
     if has_cupy_gpu:
         cupy.random.seed(seed)
-        if has_torch and has_torch_cuda_gpu:
-            torch.cuda.manual_seed_all(seed)
+        if has_torch and has_torch_sdaa_gpu:
+            torch.sdaa.manual_seed_all(seed)
             torch.backends.cudnn.deterministic = True
             torch.backends.cudnn.benchmark = False
 
@@ -141,12 +142,12 @@ def is_torch_array(obj: Any) -> bool:  # pragma: no cover
         return False
 
 
-def is_torch_cuda_array(obj: Any) -> bool:  # pragma: no cover
-    return is_torch_array(obj) and obj.is_cuda
+def is_torch_sdaa_array(obj: Any) -> bool:  # pragma: no cover
+    return is_torch_array(obj) and obj.is_sdaa
 
 
 def is_torch_gpu_array(obj: Any) -> bool:  # pragma: no cover
-    return is_torch_cuda_array(obj) or is_torch_mps_array(obj)
+    return is_torch_sdaa_array(obj) or is_torch_mps_array(obj)
 
 
 def is_torch_mps_array(obj: Any) -> bool:  # pragma: no cover
@@ -196,8 +197,8 @@ def set_active_gpu(gpu_id: int) -> "cupy.cuda.Device":  # pragma: no cover
     device = cupy.cuda.device.Device(gpu_id)
     device.use()
 
-    if has_torch_cuda_gpu:
-        torch.cuda.set_device(gpu_id)
+    if has_torch_sdaa_gpu:
+        torch.sdaa.set_device(gpu_id)
 
     return device
 
@@ -421,7 +422,7 @@ def torch2xp(
     from .api import NumpyOps
 
     assert_pytorch_installed()
-    if is_torch_cuda_array(torch_tensor):
+    if is_torch_sdaa_array(torch_tensor):
         if isinstance(ops, NumpyOps):
             return torch_tensor.detach().cpu().numpy()
         else:

@@ -1,3 +1,4 @@
+# Adapted to tecorigin hardware
 import platform
 import warnings
 
@@ -37,19 +38,19 @@ try:  # pragma: no cover
     import torch.utils.dlpack
 
     has_torch = True
-    has_torch_cuda_gpu = torch.cuda.device_count() != 0
+    has_torch_sdaa_gpu = torch.sdaa.device_count() != 0
     has_torch_mps = hasattr(torch.backends, "mps") and torch.backends.mps.is_built()
     has_torch_mps_gpu = has_torch_mps and torch.backends.mps.is_available()
-    has_torch_gpu = has_torch_cuda_gpu
+    has_torch_gpu = has_torch_sdaa_gpu
     torch_version = Version(str(torch.__version__))
     has_torch_amp = (
         torch_version >= Version("1.9.0")
-        and not torch.cuda.amp.common.amp_definitely_not_available()
+        and not torch.sdaa.amp.common.amp_definitely_not_available()
     )
 except ImportError:  # pragma: no cover
     torch = None  # type: ignore
     has_torch = False
-    has_torch_cuda_gpu = False
+    has_torch_sdaa_gpu = False
     has_torch_gpu = False
     has_torch_mps = False
     has_torch_mps_gpu = False
