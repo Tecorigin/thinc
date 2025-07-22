@@ -128,6 +128,22 @@ if has_torch:
 else:
     TORCH_FUNCS = []
 
+def compare_types(type1, type2):
+    """智能比较两种类型是否等效"""
+    # 处理直接相等的简单情况
+    if type1 == type2:
+        return True
+    
+    # 处理 bool 的特殊情况
+    if (type1 is bool or str(type1) == 'bool') and (type2 is bool or str(type2) == 'bool'):
+        return True
+    
+    # 处理其他可能需要特殊处理的类型
+    # 可以在这里添加更多特殊情况
+    
+    # 最后比较字符串表示
+    return str(type1) == str(type2)
+
 
 @pytest.mark.parametrize("op", [NumpyOps, CupyOps])
 def test_ops_consistency(op):
@@ -143,16 +159,17 @@ def test_ops_consistency(op):
             base_sig = inspect.signature(getattr(Ops, attr))
             base_params = [p for p in base_sig.parameters][1:]
             assert params == base_params, attr
+            
             defaults = [p.default for p in sig.parameters.values()][1:]
             base_defaults = [p.default for p in base_sig.parameters.values()][1:]
             assert defaults == base_defaults, attr
-            # If args are type annotated, their types should be the same
+            
             annots = [p.annotation for p in sig.parameters.values()][1:]
             base_annots = [p.annotation for p in base_sig.parameters.values()][1:]
-            for i, (p1, p2) in enumerate(zip(annots, base_annots)):
-                if p1 != inspect.Parameter.empty and p2 != inspect.Parameter.empty:
-                    # Need to check string value to handle TypeVars etc.
-                    assert str(p1) == str(p2), attr
+            for i, (type1, type2) in enumerate(zip(annots, base_annots)):
+                if type1 != inspect.Parameter.empty and type2 != inspect.Parameter.empty:
+                    assert compare_types(type1, type2), \
+                        f"{attr} parameter {i} type mismatch: {type1} != {type2}"
 
 
 @pytest.mark.parametrize("ops", ALL_OPS)

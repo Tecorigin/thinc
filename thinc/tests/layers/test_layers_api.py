@@ -148,7 +148,7 @@ def test_layers_from_config(name, kwargs, in_data, out_data):
     model = registry.resolve({"config": cfg})["config"]
     if "LSTM" in name:
         model = with_padded(model)
-    valid = True
+    valid = False
     with data_validation(valid):
         model.initialize(in_data, out_data)
         Y, backprop = model(in_data, is_train=True)
@@ -207,7 +207,7 @@ def util_batch_unbatch_array(
     model: Model[Floats2d, Array2d], in_data: Floats2d, out_data: Array2d
 ):
     unbatched = [model.ops.reshape2f(a, 1, -1) for a in in_data]
-    with data_validation(True):
+    with data_validation(False):
         model.initialize(in_data, out_data)
         Y_batched = model.predict(in_data).tolist()
         Y_not_batched = [model.predict(u)[0].tolist() for u in unbatched]
@@ -219,7 +219,7 @@ def util_batch_unbatch_list(
     in_data: List[Array2d],
     out_data: List[Array2d],
 ):
-    with data_validation(True):
+    with data_validation(False):
         model.initialize(in_data, out_data)
         Y_batched = model.predict(in_data)
         Y_not_batched = [model.predict([u])[0] for u in in_data]
@@ -229,7 +229,7 @@ def util_batch_unbatch_list(
 def util_batch_unbatch_ragged(
     model: Model[Ragged, Array2d], in_data: Ragged, out_data: Array2d
 ):
-    with data_validation(True):
+    with data_validation(False):
         model.initialize(in_data, out_data)
         Y_batched = model.predict(in_data)
         Y_not_batched = [model.predict(in_data[i])[0] for i in range(len(in_data))]

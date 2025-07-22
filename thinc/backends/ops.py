@@ -482,7 +482,7 @@ class Ops:
             unpadded[indices[i]] = data[i, : int(lengths[i])]
         return cast(List2d, unpadded)
 
-    def get_dropout_mask(self, shape: Shape, drop: Optional[float]) -> FloatsXd:
+    def get_dropout_mask(self, shape: Tuple[int, ...], drop: Optional[float]) -> FloatsXd:
         """Create a random mask for applying dropout, with a certain percent of
         the mask (defined by `drop`) will contain zeros. The neurons at those
         positions will be deactivated during training, resulting in a more
@@ -540,7 +540,7 @@ class Ops:
 
     def alloc_f(
         self,
-        shape: Shape,
+        shape: Tuple[int, ...],
         *,
         dtype: Optional[DTypesFloat] = "float32",
         zeros: bool = True,
@@ -591,7 +591,7 @@ class Ops:
 
     def alloc_i(
         self,
-        shape: Shape,
+        shape: Tuple[int, ...],
         *,
         dtype: Optional[DTypesInt] = "int32",
         zeros: bool = True,
@@ -600,7 +600,7 @@ class Ops:
 
     def alloc(
         self,
-        shape: Shape,
+        shape: Tuple[int, ...],
         *,
         dtype: Optional[DTypes] = "float32",
         zeros: bool = True,
@@ -640,7 +640,7 @@ class Ops:
     ) -> Floats4d:
         return cast(Floats4d, self.reshape(array, (d0, d1, d2, d3)))
 
-    def reshape_f(self, array: FloatsXd, shape: Shape) -> FloatsXd:
+    def reshape_f(self, array: FloatsXd, shape: Tuple[int, ...]) -> FloatsXd:
         return self.reshape(array, shape)
 
     def reshape1i(self, array: IntsXd, d0: int) -> Ints1d:
@@ -655,10 +655,10 @@ class Ops:
     def reshape4i(self, array: IntsXd, d0: int, d1: int, d2: int, d3: int) -> Ints4d:
         return cast(Ints4d, self.reshape(array, (d0, d1, d2, d3)))
 
-    def reshape_i(self, array: IntsXd, shape: Shape) -> IntsXd:
+    def reshape_i(self, array: IntsXd, shape: Tuple[int, ...]) -> IntsXd:
         return self.reshape(array, shape)
 
-    def reshape(self, array: ArrayT, shape: Shape) -> ArrayT:
+    def reshape(self, array: ArrayT, shape: Tuple[int, ...]) -> ArrayT:
         """Reshape an array."""
         if isinstance(shape, int):
             shape = (shape,)

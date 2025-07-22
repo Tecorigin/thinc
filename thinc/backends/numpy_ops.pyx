@@ -68,13 +68,6 @@ class NumpyOps(Ops):
 
         return array
 
-
-    def alloc(self, shape: Shape, *, dtype: Optional[DTypes] = "float32", zeros: bool = True) -> ArrayXd:
-        if zeros:
-            return self.xp.zeros(shape, dtype=dtype)
-        else:
-            return self.xp.empty(shape, dtype=dtype)
-
     def cblas(self) -> CBlas:
         return CBlas()
 
